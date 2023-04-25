@@ -1,6 +1,7 @@
 <div class="main">
     <div class="button">
-        <button mat-raised-button color="primary">Add user+</button>
+        <button mat-raised-button color="primary" (click)="popUp()">Add
+            user+</button>
     </div>
     <div class="table">
         <app-table [data]="usersList" [displayedColumns]="displayedColumns"

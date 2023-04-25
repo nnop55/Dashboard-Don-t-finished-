@@ -10,8 +10,6 @@ import { MatPaginator } from '@angular/material/paginator';
   styleUrls: ['./table.component.css']
 })
 export class TableComponent implements OnInit, OnChanges {
-  @ViewChild(MatPaginator, { static: true }) matPaginator!: MatPaginator;
-
   @Output() pageChanged = new EventEmitter<{ pageIndex: number, pageSize: number }>();
   @Output() sortBy = new EventEmitter<{ active: string, direction: string }>();
   @Output() currentIdEmitter = new EventEmitter<{ emitId: number }>();
@@ -20,7 +18,6 @@ export class TableComponent implements OnInit, OnChanges {
   @Input() displayedColumns!: { columnDef: string, header: string, isSortable: boolean }[];
   @Input() totalItems!: number;
   @Input() searchData!: any;
-  // @Input() changedVar!: any;
 
   columnDefs!: string[];
 
@@ -42,10 +39,6 @@ export class TableComponent implements OnInit, OnChanges {
   //   const filterValue = (event.target as HTMLInputElement).value;
   //   this.dataSource.filter = filterValue.trim().toLowerCase();
   //   this.test = filterValue;
-  // }
-
-  // changeValue(active: boolean) {
-  //   return this.changedVar.filter((o: any) => o.value == active)[0].viewValue;
   // }
 
   onPageChangedEmit(event: any) {

@@ -10,12 +10,9 @@ export class PopUpService {
 
   constructor(public dialog: MatDialog) { }
 
-  openDialog<T, D = any>(component: ComponentType<T>, data?: D, details?: D): Observable<any> {
+  openDialog<T, D = any>(component: ComponentType<T>, data?: D): Observable<any> {
     const dialogRef = this.dialog.open(component, {
-      data: {
-        data: data,
-        details: details
-      },
+      data,
       width: '500px'
     });
 

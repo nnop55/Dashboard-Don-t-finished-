@@ -5,6 +5,7 @@ import { PopUpComponent } from 'src/app/shared/pop-up/pop-up.component';
 import { MatDialog } from '@angular/material/dialog';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { PopUpService } from 'src/app/shared/pop-up/pop-up.service';
+import { NumberToBooleanPipe } from 'src/app/shared/pipes/number-to-boolean.pipe';
 
 @Component({
   selector: 'app-users',
@@ -30,6 +31,7 @@ export class UsersComponent implements OnInit {
   active: string = "Username";
   direction: string = "asc";
   myForm: any;
+  numberToBooleanPipe = new NumberToBooleanPipe();
 
   constructor(private _service: UsersService,
     public dialog: MatDialog,
@@ -56,9 +58,6 @@ export class UsersComponent implements OnInit {
       this.totalItems = data.totalItems;
       if (this.totalItems > 0) {
         this.usersList = data.users;
-        this.usersList.map((i: any) => {
-          return i.active = i.active == 0 ? i.active = 'False' : i.active = 'True'
-        })
       }
     });
 
@@ -74,24 +73,57 @@ export class UsersComponent implements OnInit {
     })
   }
 
-  popUp(data: User) {
-    let details: any = {
-      editBtn: true,
-      saveBtn: true,
-      createBtn: false,
-      title: "User",
-      label1: "Username",
-      label2: "Active",
-      showSaveBtn: this.popUpBtn
+  popUp(data: User = { userId: 0, username: '', active: 0 }) {
+    let checkMode = { edit: false, save: false, create: false, mode: 'none' }
+    if (data.userId == 0) {
+      checkMode = { edit: false, save: false, create: true, mode: 'create' }
+    } else {
+      checkMode = { edit: true, save: true, create: false, mode: 'edit' }
     }
-    this.dialogService.openDialog(PopUpComponent, data, details)
+    const dialogData = {
+      data: data,
+      fields: [
+        { label: "User ID", type: "number", index: "userId" },
+        { label: "User Name", type: "text", index: "username" },
+        { label: "Active", type: "selector", index: "active" },
+      ],
+      title: "User",
+      editBtn: checkMode.edit,
+      saveBtn: checkMode.save,
+      createBtn: checkMode.create,
+      showSaveBtn: this.popUpBtn,
+      mode: checkMode.mode
+    }
+
+    this.dialogService.openDialog(PopUpComponent, dialogData)
       .subscribe(result => {
-        console.log('The dialog was closed', result);
+        if (result) {
+          switch (dialogData.mode) {
+            case 'create':
+              this.createUser(result)
+              break;
+            case 'edit':
+              this.updateUser(result.userId, result);
+              break;
+          }
+        }
       });
   }
 
-  updateUser(event: any = null, body: User) {
-    this._service.updateUser(event.emitId, body)
+  updateUser(id: any, body: User) {
+    this._service.updateUser(id, body).subscribe((res: any) => {
+      if (res.status == "OK") {
+        this.getAllUsers();
+      } else {
+        console.log("ERROR in Update")
+      }
+    })
+  }
+
+  createUser(body: User) {
+    this._service.createUser(body).subscribe((res: any) => {
+      this.getAllUsers();
+    })
   }
 
 
@@ -102,9 +134,7 @@ export class UsersComponent implements OnInit {
   }
 
   onSort(event: any) {
-    if (event.direction == "") {
-      event.direction = "asc"
-    }
+    if (event.direction == "") event.direction = "asc";
     this.active = event.active;
     this.direction = event.direction;
     this.getAllUsers();

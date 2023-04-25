@@ -26,7 +26,8 @@
 
                 <td mat-cell *matCellDef="let row">
 
-                    {{row[column.columnDef]}}
+                    {{ column.columnDef === 'active' ? (row.active |
+                    numberToBoolean) : row[column.columnDef] }}
 
                     <ng-container *ngIf="column.columnDef === 'action'">
                         <mat-icon (click)="popUp(row.userId)"

@@ -1,34 +1,49 @@
-<h2 mat-dialog-title>{{data.details.title}}</h2>
+<h2 mat-dialog-title>{{infoData.title}}</h2>
 <mat-dialog-content class="mat-typography">
 
     <div class="example-full-width" cellspacing="0">
 
-        <div *ngFor="let key of dataKeys;let i = index">
-            <mat-form-field class="example-full-width" appearance="fill">
-                <mat-label>{{infoData[key]}}</mat-label>
-                <input matInput [value]="infoData[key]"
-                    [disabled]="disableInputs(i)">
+        <div *ngFor="let item of infoData.fields;let i = index">
+            <mat-form-field class="example-full-width"
+                [ngStyle]="{'display':infoData.mode == 'create' && i === 0?'none':'block'}"
+                appearance="fill">
+                <mat-label>{{item.label}}</mat-label>
+
+                <ng-container
+                    *ngIf="item.type == 'text' || item.type == 'number'">
+                    <input [type]="item.type" matInput
+                        [(ngModel)]="infoData.data[item.index]"
+                        [disabled]="disableInputs(i) && infoData.mode != 'create'">
+                </ng-container>
+
+                <ng-container *ngIf="item.type == 'selector'">
+                    <mat-select [(ngModel)]="infoData.data[item.index]"
+                        [disabled]="disableInputs(i) && infoData.mode != 'create'">
+                        <mat-option [value]=" 0">False</mat-option>
+                        <mat-option [value]="1">True</mat-option>
+                    </mat-select>
+                </ng-container>
+
             </mat-form-field>
         </div>
     </div>
+
 
 
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
     <button mat-button mat-dialog-close>Cancel</button>
-    <button mat-button cdkFocusInitial>
-        <span
-            (click)="data.details.showSaveBtn = true && disableEnableInps = true"
-            *ngIf="data.details.editBtn && !data.details.showSaveBtn">
-            Edit user
-        </span>
-        <span [mat-dialog-close]="true" (click)="disableEnableInps = false"
-            *ngIf="data.details.showSaveBtn && data.details.saveBtn">
-            Save
-        </span>
-        <span *ngIf="data.details.createBtn" [mat-dialog-close]="true">
-            Add user
-        </span>
+    <button mat-button cdkFocusInitial
+        (click)="data.showSaveBtn = true && disableEnableInps = true"
+        *ngIf="data.editBtn && !data.showSaveBtn">
+        Edit user
+    </button>
+    <button mat-button cdkFocusInitial [mat-dialog-close]="true"
+        (click)="saveBtn()" *ngIf="data.showSaveBtn && data.saveBtn">
+        Save </button>
+    <button mat-button cdkFocusInitial *ngIf="data.createBtn"
+        [mat-dialog-close]="true" (click)="createBtn()">
+        Add user
     </button>
 </mat-dialog-actions>

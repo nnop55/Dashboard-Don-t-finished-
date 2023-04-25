@@ -16,10 +16,14 @@ export class UsersService {
   }
 
   public getuserById(id: number): Observable<User> {
-    return this.http.get<User>(`${this.userBaseUrl}getBy/${id}`);
+    return this.http.get<User>(`${this.userBaseUrl}GetBy/${id}`);
   }
 
   public updateUser(id: number, body: User): Observable<User> {
-    return this.http.put<User>(`${this.userBaseUrl}/update/${id}`, body)
+    return this.http.put<User>(`${this.userBaseUrl}Update/${id}`, body)
+  }
+
+  public createUser(body: User): Observable<User> {
+    return this.http.post<User>(`${this.userBaseUrl}Create/`, body)
   }
 }
