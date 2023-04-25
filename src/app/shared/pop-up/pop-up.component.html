@@ -1,0 +1,34 @@
+<h2 mat-dialog-title>{{data.details.title}}</h2>
+<mat-dialog-content class="mat-typography">
+
+    <div class="example-full-width" cellspacing="0">
+
+        <div *ngFor="let key of dataKeys;let i = index">
+            <mat-form-field class="example-full-width" appearance="fill">
+                <mat-label>{{infoData[key]}}</mat-label>
+                <input matInput [value]="infoData[key]"
+                    [disabled]="disableInputs(i)">
+            </mat-form-field>
+        </div>
+    </div>
+
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cancel</button>
+    <button mat-button cdkFocusInitial>
+        <span
+            (click)="data.details.showSaveBtn = true && disableEnableInps = true"
+            *ngIf="data.details.editBtn && !data.details.showSaveBtn">
+            Edit user
+        </span>
+        <span [mat-dialog-close]="true" (click)="disableEnableInps = false"
+            *ngIf="data.details.showSaveBtn && data.details.saveBtn">
+            Save
+        </span>
+        <span *ngIf="data.details.createBtn" [mat-dialog-close]="true">
+            Add user
+        </span>
+    </button>
+</mat-dialog-actions>

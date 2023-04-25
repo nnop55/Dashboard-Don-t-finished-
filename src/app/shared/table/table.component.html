@@ -1,0 +1,57 @@
+<div class="table">
+    <!-- <mat-form-field appearance="standard">
+        <mat-label>Filter</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Mia"
+            #input>
+    </mat-form-field> -->
+
+    <div class="mat-elevation-z8">
+
+        <table mat-table [dataSource]="dataSource" matSort
+            (matSortChange)="onSortEmit($event)">
+
+            <ng-container *ngFor="let column of displayedColumns"
+                [matColumnDef]="column.columnDef">
+                <ng-container *ngIf="column.isSortable">
+                    <th mat-header-cell *matHeaderCellDef
+                        [mat-sort-header]="column.columnDef">
+                        {{column.header}} </th>
+                </ng-container>
+
+                <ng-container *ngIf="!column.isSortable">
+                    <th mat-header-cell *matHeaderCellDef
+                        mat-sort-header-disabled>
+                        {{column.header}} </th>
+                </ng-container>
+
+                <td mat-cell *matCellDef="let row">
+
+                    {{row[column.columnDef]}}
+
+                    <ng-container *ngIf="column.columnDef === 'action'">
+                        <mat-icon (click)="popUp(row.userId)"
+                            style="color:rgb(1, 9, 80);cursor: pointer">edit</mat-icon>
+                    </ng-container>
+
+                </td>
+            </ng-container>
+
+
+            <tr mat-header-row *matHeaderRowDef="columnDefs">
+            </tr>
+            <tr mat-row *matRowDef="let row; columns: columnDefs;">
+            </tr>
+
+            <!-- <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" colspan="4">No data matching the
+                    filter
+                    "{{input.value}}"</td>
+            </tr> -->
+        </table>
+
+
+        <mat-paginator [length]="totalItems"
+            [pageSizeOptions]="[5, 10, 25, 100]" [pageSize]="5"
+            (page)="onPageChangedEmit($event)"></mat-paginator>
+    </div>
+</div>
