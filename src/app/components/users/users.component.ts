@@ -90,6 +90,10 @@ export class UsersComponent implements OnInit {
       });
   }
 
+  updateUser(event: any = null, body: User) {
+    this._service.updateUser(event.emitId, body)
+  }
+
 
   onPageChanged(event: any) {
     this.pageIndex = event.pageIndex;
@@ -111,29 +115,4 @@ export class UsersComponent implements OnInit {
 
 
 
-
-
-// const popups = {
-//   suspend: {
-//     component: SuspendPromotionComponent,
-//     width: '500px',
-//   },
-
-//   publish: {
-//     component: PublishPromotionComponent,
-//     width: '500px',
-//   },
-// };
-
-// const dialogRef = this.dialog.open(popups[type]['component'], {
-//   width: popups[type]['width'],
-//   panelClass: 'border-16',
-//   data: {
-//     promotionDetailsData: this.promotion
-//   },
-// });
-
-// dialogRef.afterClosed().subscribe((result) => {
-//   if (!result) return;
-// });
 
