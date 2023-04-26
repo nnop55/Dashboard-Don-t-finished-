@@ -4,7 +4,6 @@ import { UsersService } from './users.service';
 import { PopUpComponent } from 'src/app/shared/pop-up/pop-up.component';
 import { MatDialog } from '@angular/material/dialog';
 import { PopUpService } from 'src/app/shared/pop-up/pop-up.service';
-import { NumberToBooleanPipe } from 'src/app/shared/pipes/number-to-boolean.pipe';
 import { DialogData, DialogMode } from 'src/app/shared/pop-up/models/dialog.model';
 
 @Component({
@@ -23,14 +22,14 @@ export class UsersComponent implements OnInit {
   usersList: User[] = [];
   popUpBtn: boolean = false;
 
-
   totalItems: number = 0;
   pageIndex: number = 0;
   pageSize: number = 5;
   active: string = "Username";
   direction: string = "asc";
-  myForm: any;
-  numberToBooleanPipe = new NumberToBooleanPipe();
+  usernameFilter!: string;
+
+  loadingStatus: boolean = true;
 
   constructor(private _service: UsersService,
     public dialog: MatDialog,
@@ -46,10 +45,12 @@ export class UsersComponent implements OnInit {
     const sortBy = this.active;
     const sortOrder = this.direction;
 
-    this._service.getAllUsers(pageIndex, pageSize, sortBy, sortOrder).subscribe((data: any) => {
+    this._service.getAllUsers(pageIndex, pageSize, sortBy, sortOrder, this.usernameFilter).subscribe((data: any) => {
       this.totalItems = data.totalItems;
       if (this.totalItems > 0) {
         this.usersList = data.users;
+        this.loadingStatus = data.users;
+        this.loadingStatus = false;
       }
     });
 
@@ -70,7 +71,6 @@ export class UsersComponent implements OnInit {
   }
 
   popUp(data: User, event: any) {
-    console.log(event)
     let checkMode: DialogMode = { edit: false, save: false, create: false, delete: false, title: '', mode: 'none' }
 
     switch (event.emitMode) {

@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { User } from 'src/app/components/users/models/user.model';
@@ -11,8 +11,12 @@ export class UsersService {
 
   constructor(private http: HttpClient) { }
 
-  public getAllUsers(pageIndex: number, pageSize: number, sortBy: string, sortOrder: string): Observable<User[]> {
-    return this.http.get<User[]>(`${this.userBaseUrl}Get/${pageIndex}/${pageSize}/${sortBy}/${sortOrder}`);
+  public getAllUsers(pageIndex: number, pageSize: number, sortBy: string, sortOrder: string, usernameFilter: string): Observable<User[]> {
+    let url: any = `${this.userBaseUrl}Get/${pageIndex}/${pageSize}/${sortBy}/${sortOrder}`;
+    if (usernameFilter) {
+      url += `?filter=${usernameFilter}`
+    }
+    return this.http.get<User[]>(url);
   }
 
   public getUserById(id: number): Observable<User> {

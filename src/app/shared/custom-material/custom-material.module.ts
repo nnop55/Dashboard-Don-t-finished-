@@ -10,6 +10,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 
 @NgModule({
@@ -24,7 +25,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     MatTableModule,
     MatSortModule,
     MatDialogModule,
-    MatFormFieldModule
+    MatFormFieldModule,
+    MatProgressSpinnerModule
   ],
   exports: [
     MatSidenavModule,
@@ -37,7 +39,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     MatTableModule,
     MatSortModule,
     MatDialogModule,
-    MatFormFieldModule
+    MatFormFieldModule,
+    MatProgressSpinnerModule
   ]
 })
 export class CustomMaterialModule {

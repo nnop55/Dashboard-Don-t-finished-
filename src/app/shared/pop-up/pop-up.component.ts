@@ -10,6 +10,7 @@ import { PopUpService } from './pop-up.service';
 export class PopUpComponent implements OnInit {
   infoData: any;
   disableEnableInps: boolean = false;
+  disableBtn: boolean = true;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -41,6 +42,14 @@ export class PopUpComponent implements OnInit {
       case 'delete':
         this.dialogRef.close(this.infoData.data);
         break;
+    }
+  }
+
+  validation(item: any) {
+    if (item != '') {
+      this.disableBtn = false;
+    } else {
+      this.disableBtn = true
     }
   }
 

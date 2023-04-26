@@ -12,14 +12,16 @@
                 <ng-container
                     *ngIf="item.type == 'text' || item.type == 'number'">
                     <input [type]="item.type" matInput
+                        (keyup)="validation(infoData.data[item.index])"
                         [(ngModel)]="infoData.data[item.index]"
                         [disabled]="disableInputs(i) && infoData.mode != 'create'">
                 </ng-container>
 
                 <ng-container *ngIf="item.type == 'selector'">
                     <mat-select [(ngModel)]="infoData.data[item.index]"
+                        (selectionChange)="validation(infoData.data[item.index])"
                         [disabled]="disableInputs(i) && infoData.mode != 'create'">
-                        <mat-option [value]=" 0">False</mat-option>
+                        <mat-option [value]="0">False</mat-option>
                         <mat-option [value]="1">True</mat-option>
                     </mat-select>
                 </ng-container>
@@ -40,11 +42,12 @@
         Edit user
     </button>
     <button mat-button cdkFocusInitial [mat-dialog-close]="true"
-        (click)="actionButtons('save')"
-        *ngIf="data.showSaveBtn && data.saveBtn">
+        (click)="actionButtons('save')" *ngIf="data.showSaveBtn && data.saveBtn"
+        [disabled]="disableBtn">
         Save </button>
     <button mat-button cdkFocusInitial *ngIf="data.createBtn"
-        [mat-dialog-close]="true" (click)="actionButtons('add')">
+        [mat-dialog-close]="true" (click)="actionButtons('add')"
+        [disabled]="disableBtn">
         Add user
     </button>
     <button style="color: red;" mat-button cdkFocusInitial
