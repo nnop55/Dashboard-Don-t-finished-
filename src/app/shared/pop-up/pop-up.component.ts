@@ -29,13 +29,19 @@ export class PopUpComponent implements OnInit {
     return index === 0 ? true : false;
   }
 
-  saveBtn() {
-    this.disableEnableInps = false
-    this.dialogRef.close(this.infoData.data);
-  }
-
-  createBtn() {
-    this.dialogRef.close(this.infoData.data);
+  actionButtons(checkButton: string) {
+    switch (checkButton) {
+      case 'save':
+        this.disableEnableInps = false;
+        this.dialogRef.close(this.infoData.data);
+        break;
+      case 'add':
+        this.dialogRef.close(this.infoData.data);
+        break;
+      case 'delete':
+        this.dialogRef.close(this.infoData.data);
+        break;
+    }
   }
 
 }

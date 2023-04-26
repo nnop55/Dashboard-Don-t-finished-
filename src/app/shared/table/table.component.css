@@ -11,3 +11,18 @@ td,
 th {
     width: 33%;
 }
+
+.action-buttons {
+    display: flex;
+    gap: 5px;
+}
+
+.main {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.add-button {
+    align-self: end;
+}

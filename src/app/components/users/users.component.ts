@@ -3,9 +3,9 @@ import { User } from 'src/app/components/users/models/user.model';
 import { UsersService } from './users.service';
 import { PopUpComponent } from 'src/app/shared/pop-up/pop-up.component';
 import { MatDialog } from '@angular/material/dialog';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { PopUpService } from 'src/app/shared/pop-up/pop-up.service';
 import { NumberToBooleanPipe } from 'src/app/shared/pipes/number-to-boolean.pipe';
+import { DialogData, DialogMode } from 'src/app/shared/pop-up/models/dialog.model';
 
 @Component({
   selector: 'app-users',
@@ -21,7 +21,6 @@ export class UsersComponent implements OnInit {
   ];
 
   usersList: User[] = [];
-  // userForm!: FormGroup;
   popUpBtn: boolean = false;
 
 
@@ -35,14 +34,7 @@ export class UsersComponent implements OnInit {
 
   constructor(private _service: UsersService,
     public dialog: MatDialog,
-    private fb: FormBuilder,
-    private dialogService: PopUpService) {
-    // this.myForm = this.fb.group({
-    //   userId: new FormControl(null),
-    //   username: new FormControl(null, Validators.required),
-    //   active: new FormControl(null, Validators.required)
-    // });
-  }
+    private dialogService: PopUpService) { }
 
   ngOnInit(): void {
     this.getAllUsers();
@@ -64,33 +56,47 @@ export class UsersComponent implements OnInit {
   }
 
   getUserById(event: any) {
-    this._service.getuserById(event.emitId).subscribe((res: User) => {
-      if (res) {
-        this.popUp(res)
-      } else {
-        alert("Not Found")
-      }
-    })
+    if (event.emitMode != 'create') {
+      this._service.getUserById(event.emitId).subscribe((res: User) => {
+        if (res) {
+          this.popUp(res, event)
+        } else {
+          alert("Not Found")
+        }
+      })
+    } else {
+      this.popUp({ userId: 0, username: '', active: 0 }, event)
+    }
   }
 
-  popUp(data: User = { userId: 0, username: '', active: 0 }) {
-    let checkMode = { edit: false, save: false, create: false, mode: 'none' }
-    if (data.userId == 0) {
-      checkMode = { edit: false, save: false, create: true, mode: 'create' }
-    } else {
-      checkMode = { edit: true, save: true, create: false, mode: 'edit' }
+  popUp(data: User, event: any) {
+    console.log(event)
+    let checkMode: DialogMode = { edit: false, save: false, create: false, delete: false, title: '', mode: 'none' }
+
+    switch (event.emitMode) {
+      case 'create':
+        checkMode = { edit: false, save: false, create: true, delete: false, title: 'Create user', mode: 'create' }
+        break;
+      case 'edit':
+        checkMode = { edit: true, save: true, create: false, delete: false, title: 'Update user', mode: 'edit' }
+        break;
+      case 'delete':
+        checkMode = { edit: false, save: false, create: false, delete: true, title: 'Are you sure delete this user?', mode: 'delete' }
+        break;
     }
-    const dialogData = {
+
+    const dialogData: DialogData = {
       data: data,
       fields: [
         { label: "User ID", type: "number", index: "userId" },
         { label: "User Name", type: "text", index: "username" },
         { label: "Active", type: "selector", index: "active" },
       ],
-      title: "User",
+      title: checkMode.title,
       editBtn: checkMode.edit,
       saveBtn: checkMode.save,
       createBtn: checkMode.create,
+      deleteBtn: checkMode.delete,
       showSaveBtn: this.popUpBtn,
       mode: checkMode.mode
     }
@@ -105,12 +111,16 @@ export class UsersComponent implements OnInit {
             case 'edit':
               this.updateUser(result.userId, result);
               break;
+            case 'delete':
+              this.deleteUser(result.userId);
+              break;
           }
         }
       });
+
   }
 
-  updateUser(id: any, body: User) {
+  updateUser(id: number, body: User) {
     this._service.updateUser(id, body).subscribe((res: any) => {
       if (res.status == "OK") {
         this.getAllUsers();
@@ -140,6 +150,11 @@ export class UsersComponent implements OnInit {
     this.getAllUsers();
   }
 
+  deleteUser(id: number) {
+    this._service.deleteUser(id).subscribe((res: any) => {
+      this.getAllUsers();
+    })
+  }
 
 }
 

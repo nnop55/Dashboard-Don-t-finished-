@@ -12,12 +12,12 @@ import { MatPaginator } from '@angular/material/paginator';
 export class TableComponent implements OnInit, OnChanges {
   @Output() pageChanged = new EventEmitter<{ pageIndex: number, pageSize: number }>();
   @Output() sortBy = new EventEmitter<{ active: string, direction: string }>();
-  @Output() currentIdEmitter = new EventEmitter<{ emitId: number }>();
+  @Output() currentIdEmitter = new EventEmitter<{ emitId: number, emitMode: string }>();
 
   @Input() data!: any[];
   @Input() displayedColumns!: { columnDef: string, header: string, isSortable: boolean }[];
   @Input() totalItems!: number;
-  @Input() searchData!: any;
+  @Input() buttonText!: string;
 
   columnDefs!: string[];
 
@@ -51,13 +51,14 @@ export class TableComponent implements OnInit, OnChanges {
     this.sortBy.emit({ active, direction })
   }
 
-  currentIdEmit(id: number) {
-    const emitId: number = id;
-    this.currentIdEmitter.emit({ emitId });
+  currentIdAndModeEmit(emitData: any) {
+    const { emitId, emitMode } = emitData;
+    this.currentIdEmitter.emit({ emitId, emitMode });
   }
 
-  popUp(id: number) {
-    this.currentIdEmit(id);
+  popUp(id: number, mode: string) {
+    const emitData = { emitId: id, emitMode: mode }
+    this.currentIdAndModeEmit(emitData);
   }
 
 

@@ -1,12 +1,5 @@
-<div class="main">
-    <div class="button">
-        <button mat-raised-button color="primary" (click)="popUp()">Add
-            user+</button>
-    </div>
-    <div class="table">
-        <app-table [data]="usersList" [displayedColumns]="displayedColumns"
-            (sortBy)="onSort($event)" [totalItems]="totalItems"
-            (pageChanged)="onPageChanged($event)"
-            (currentIdEmitter)="getUserById($event)"></app-table>
-    </div>
-</div>
+<app-table [data]="usersList" [displayedColumns]="displayedColumns"
+    (sortBy)="onSort($event)" [totalItems]="totalItems"
+    (pageChanged)="onPageChanged($event)"
+    (currentIdEmitter)="getUserById($event)"
+    [buttonText]="'Add user+'"></app-table>

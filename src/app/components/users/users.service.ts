@@ -15,7 +15,7 @@ export class UsersService {
     return this.http.get<User[]>(`${this.userBaseUrl}Get/${pageIndex}/${pageSize}/${sortBy}/${sortOrder}`);
   }
 
-  public getuserById(id: number): Observable<User> {
+  public getUserById(id: number): Observable<User> {
     return this.http.get<User>(`${this.userBaseUrl}GetBy/${id}`);
   }
 
@@ -25,5 +25,9 @@ export class UsersService {
 
   public createUser(body: User): Observable<User> {
     return this.http.post<User>(`${this.userBaseUrl}Create/`, body)
+  }
+
+  public deleteUser(id: number): Observable<User> {
+    return this.http.delete<User>(`${this.userBaseUrl}Delete/${id}`);
   }
 }
