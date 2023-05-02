@@ -5,6 +5,8 @@ import { PopUpComponent } from 'src/app/shared/pop-up/pop-up.component';
 import { MatDialog } from '@angular/material/dialog';
 import { PopUpService } from 'src/app/shared/pop-up/pop-up.service';
 import { DialogData, DialogMode } from 'src/app/shared/pop-up/models/dialog.model';
+import { ActivatedRoute, Router } from '@angular/router';
+
 
 @Component({
   selector: 'app-users',
@@ -12,6 +14,7 @@ import { DialogData, DialogMode } from 'src/app/shared/pop-up/models/dialog.mode
   styleUrls: ['./users.component.css']
 })
 export class UsersComponent implements OnInit {
+
   displayedColumns: any[] = [
     { columnDef: 'userId', header: 'UserId' },
     { columnDef: 'username', header: 'Username', isSortable: true },
@@ -22,41 +25,54 @@ export class UsersComponent implements OnInit {
   usersList: User[] = [];
   popUpBtn: boolean = false;
 
+  tableParams: any = {
+    pageIndex: 0,
+    pageSize: 5,
+    sortBy: "username",
+    sortOrder: "asc",
+    searchTerm: ''
+  }
+
   totalItems: number = 0;
-  pageIndex: number = 0;
-  pageSize: number = 5;
-  active: string = "Username";
-  direction: string = "asc";
-  usernameFilter!: string;
+  // pageIndex: number = 0;
+  // pageSize: number = 5;
+  // sortBy: string = "Username";
+  // sortOrder: string = "asc";
+  // searchTerm!: string;
 
   loadingStatus: boolean = true;
 
   constructor(private _service: UsersService,
     public dialog: MatDialog,
-    private dialogService: PopUpService) { }
+    private dialogService: PopUpService,
+    private activatedRoute: ActivatedRoute,
+    private router: Router) { }
 
   ngOnInit(): void {
-    this.getAllUsers();
+    // if (Object.keys(this.routeParams).length === 0) {
+    //   this.carData = res;
+    // }
+    this.getParams();
   }
 
   getAllUsers() {
-    const pageIndex = this.pageIndex + 1;
-    const pageSize = this.pageSize;
-    const sortBy = this.active;
-    const sortOrder = this.direction;
+    const pageIndex = this.tableParams.pageIndex + 1;
+    const pageSize = this.tableParams.pageSize;
+    const sortBy = this.tableParams.sortBy;
+    const sortOrder = this.tableParams.sortOrder;
 
-    this._service.getAllUsers(pageIndex, pageSize, sortBy, sortOrder, this.usernameFilter).subscribe((data: any) => {
+    this._service.getAllUsers(pageIndex, pageSize, sortBy, sortOrder, this.tableParams.searchTerm).subscribe((data: any) => {
       this.totalItems = data.totalItems;
       if (this.totalItems > 0) {
         this.usersList = data.users;
-        this.loadingStatus = data.users;
         this.loadingStatus = false;
       }
+      this.updateRouteParams();
     });
 
   }
 
-  getUserById(event: any) {
+  callPopUp(event: any) {
     if (event.emitMode != 'create') {
       this._service.getUserById(event.emitId).subscribe((res: User) => {
         if (res) {
@@ -136,25 +152,63 @@ export class UsersComponent implements OnInit {
     })
   }
 
-
-  onPageChanged(event: any) {
-    this.pageIndex = event.pageIndex;
-    this.pageSize = event.pageSize;
-    this.getAllUsers();
-  }
-
-  onSort(event: any) {
-    if (event.direction == "") event.direction = "asc";
-    this.active = event.active;
-    this.direction = event.direction;
-    this.getAllUsers();
-  }
-
   deleteUser(id: number) {
     this._service.deleteUser(id).subscribe((res: any) => {
       this.getAllUsers();
     })
   }
+
+  onPageChanged(event: any) {
+    this.tableParams.pageIndex = event.pageIndex;
+    this.tableParams.pageSize = event.pageSize;
+    this.getAllUsers();
+  }
+
+  onSort(event: any) {
+    if (event.direction == "") event.direction = "asc";
+    this.tableParams.sortBy = event.active;
+    this.tableParams.sortOrder = event.direction;
+    this.getAllUsers();
+  }
+
+
+  onFilterSearch(filterValue: any) {
+    this.tableParams.searchTerm = filterValue;
+    this.getAllUsers();
+  }
+
+  getParams() {
+    this.activatedRoute.queryParams.subscribe(params => {
+      console.log(params, this.tableParams)
+
+
+      this.tableParams.pageIndex = parseInt(params['pageIndex']) ? parseInt(params['pageIndex']) : 0;
+      this.tableParams.pageSize = parseInt(params['pageSize']) ? parseInt(params['pageSize']) : 5;
+      this.tableParams.sortBy = params['sortBy'] ? params['sortBy'] : 'username';
+      this.tableParams.sortOrder = params['sortOrder'] ? params['sortOrder'] : 'asc';
+      this.tableParams.searchTerm = params['filter'] ? params['filter'] : '';
+
+      this.getAllUsers();
+
+
+
+    });
+  }
+
+  updateRouteParams() {
+    const queryParams = {
+      pageIndex: this.tableParams.pageIndex,
+      pageSize: this.tableParams.pageSize,
+      sortBy: this.tableParams.sortBy,
+      sortOrder: this.tableParams.sortOrder,
+      filter: this.tableParams.searchTerm
+    };
+    this.router.navigate([], {
+      relativeTo: this.activatedRoute,
+      queryParams: queryParams
+    });
+  }
+
 
 }
 

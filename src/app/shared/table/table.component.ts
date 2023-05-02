@@ -1,27 +1,28 @@
-import { Component, Input, OnInit, OnChanges, EventEmitter, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, AfterViewInit, OnChanges, EventEmitter, Output, SimpleChanges, ViewChild, ElementRef } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
-import { TableService } from './table.service';
-import { ActivatedRoute, } from '@angular/router';
-import { MatPaginator } from '@angular/material/paginator';
 import { LoadingService } from '../loading/service/loading.service';
+import { fromEvent } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 
 @Component({
   selector: 'app-table',
   templateUrl: './table.component.html',
   styleUrls: ['./table.component.css']
 })
-export class TableComponent implements OnInit, OnChanges {
+export class TableComponent implements OnInit, OnChanges, AfterViewInit {
+  @ViewChild('searchInput', { static: false }) searchInputRef!: ElementRef;
+
   @Output() pageChanged = new EventEmitter<{ pageIndex: number, pageSize: number }>();
-  @Output() sortBy = new EventEmitter<{ active: string, direction: string }>();
-  @Output() currentIdEmitter = new EventEmitter<{ emitId: number, emitMode: string }>();
+  @Output() sortByEmit = new EventEmitter<{ active: string, direction: string }>();
+  @Output() currentIdAndModeEmitter = new EventEmitter<{ emitId: number, emitMode: string }>();
+  @Output() filterValue = new EventEmitter<string>();
 
   @Input() data!: any[];
   @Input() displayedColumns!: { columnDef: string, header: string, isSortable: boolean }[];
   @Input() totalItems!: number;
   @Input() buttonText!: string;
-  @Input() filter!: string;
   @Input() loadingStatus!: boolean;
-
+  @Input() tableParams!: any;
 
   columnDefs!: string[];
 
@@ -39,9 +40,22 @@ export class TableComponent implements OnInit, OnChanges {
     }
   }
 
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+  ngAfterViewInit() {
+    setTimeout(() => {
+      const searchInput = this.searchInputRef.nativeElement;
+
+      fromEvent(searchInput, 'keyup').pipe(
+        debounceTime(200)
+      ).subscribe((event: any) => {
+        this.onFilterEmit(this.tableParams.searchTerm)
+      });
+    }, 100);
+
+  }
+
+  onFilterEmit(event: any) {
+    console.log(event)
+    this.filterValue.emit(event);
   }
 
   onPageChangedEmit(event: any) {
@@ -51,18 +65,19 @@ export class TableComponent implements OnInit, OnChanges {
 
   onSortEmit(event: any) {
     const { active, direction } = event;
-    this.sortBy.emit({ active, direction })
+    this.sortByEmit.emit({ active, direction })
   }
 
   currentIdAndModeEmit(emitData: any) {
     const { emitId, emitMode } = emitData;
-    this.currentIdEmitter.emit({ emitId, emitMode });
+    this.currentIdAndModeEmitter.emit({ emitId, emitMode });
   }
 
   popUp(id: number, mode: string) {
     const emitData = { emitId: id, emitMode: mode }
     this.currentIdAndModeEmit(emitData);
   }
+
 
   // loadingFunc(){
   //   this.loader.loadingEmitter.subscribe(res => {

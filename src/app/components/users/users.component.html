@@ -1,5 +1,5 @@
 <app-table [data]="usersList" [displayedColumns]="displayedColumns"
-    (sortBy)="onSort($event)" [totalItems]="totalItems"
-    (pageChanged)="onPageChanged($event)"
-    (currentIdEmitter)="getUserById($event)" [buttonText]="'Add user+'"
-    [filter]="usernameFilter" [loadingStatus]="loadingStatus"></app-table>
+    (sortByEmit)="onSort($event)" [totalItems]="totalItems"
+    (pageChanged)="onPageChanged($event)" (filterValue)="onFilterSearch($event)"
+    (currentIdAndModeEmitter)="callPopUp($event)" [buttonText]="'Add user+'"
+    [loadingStatus]="loadingStatus" [tableParams]="tableParams"></app-table>
